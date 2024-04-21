@@ -16,6 +16,7 @@ Functions:
   getaddrinfo  get a list of addresses corresponding to a hostname and port
   getnameinfo  get the hostname and port for a socket
   msleep       sleep for some time in milliseconds
+  poll         wait for a file descriptor to become ready
 
 bind() and connect() use raw sockaddr structures passed as a string.
 Hostname/port translation to a sockaddr is left to the application. 
@@ -520,6 +521,21 @@ int ll_msleep(lua_State *L) {
 } //ll_msleep
 
 
+int ll_poll(lua_State *L) {
+        // wait for some event on a file descriptor
+	// Lua args:
+	//   fds - a raw array of pollfd structures
+        //   timeout - the timeout value in milliseconds as an integer
+	// return values: new pollfds, number of pollfds with events
+	size_t fdslen;
+	struct pollfd *fds = (struct pollfd *) luaL_checklstring(L, 1, &fdslen); // raw pollfd[]
+	int timeout = luaL_checkinteger(L, 2);
+	int n = poll(fds, fdslen / sizeof(struct pollfd), timeout);
+	lua_pushlstring(L, (char *) fds, fdslen);
+	lua_pushinteger(L, n);
+	return 2;
+} //ll_poll
+
 // ---------------------------------------------------------------------
 // Lua library function
 
@@ -542,7 +558,8 @@ static const struct luaL_Reg minisocklib[] = {
 	{"getnameinfo", ll_getnameinfo},
 	// misc
 	{"msleep", ll_msleep},
-	
+	{"poll", ll_poll},
+
 	{NULL, NULL},
 };
 

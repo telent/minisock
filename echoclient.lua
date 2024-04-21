@@ -49,6 +49,12 @@ function test(what)
 	r, msg = ms.write(sfd, req)
 	printv("echoclient sends on fd ".. sfd .. ":", req)
 
+	pollfds, numfds = ms.poll(string.pack("iHH", sfd, 1, 0), 1000)
+	if numfds > 0 then
+		printv("poll on " .. sfd .. " returned ready")
+		printv(string.unpack("iHH", pollfds))
+	end
+
 	resp, msg = ms.read(sfd)
 	if not resp then print("echoclient:", msg); goto exit end
 
