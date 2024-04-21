@@ -142,6 +142,12 @@ msleep(n)
 	(it uses the linux nanosleep() function)
 	return value: true on success, or (nil, error msg)
 
+poll(pollfds, timeout)
+    waits for readiness events (descriptor becomes readable/writable)
+	in each of pollfds, which is a raw array of pollfd structs
+	(see poll(2) manual page). Returns the modified pollfds array
+	and the number of ready descriptors as multiple values.
+
 ```
 
 ### License
