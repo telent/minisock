@@ -528,7 +528,10 @@ int ll_poll(lua_State *L) {
         //   timeout - the timeout value in milliseconds as an integer
 	// return values: new pollfds, number of pollfds with events
 	size_t fdslen;
-	struct pollfd *fds = (struct pollfd *) luaL_checklstring(L, 1, &fdslen); // raw pollfd[]
+	char *t =  luaL_checklstring(L, 1, &fdslen); // raw pollfd[]
+	int nfds = fdslen / sizeof(struct pollfd);
+	struct pollfd fds[nfds];
+	memcpy(fds, t, fdslen);
 	int timeout = luaL_checkinteger(L, 2);
 	int n = poll(fds, fdslen / sizeof(struct pollfd), timeout);
 	lua_pushlstring(L, (char *) fds, fdslen);
